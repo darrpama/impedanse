@@ -1,8 +1,8 @@
 import scipy.optimize as optimization
 import matplotlib.pyplot as plt
-import matplotlib
-import math
-import numpy
+# import matplotlib
+# import math
+# import numpy
 
 with open ("data.dat","r", errors = 'replace') as f:
   lines = f.readlines()
