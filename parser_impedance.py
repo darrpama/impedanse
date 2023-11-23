@@ -53,6 +53,7 @@ def model2 (x,a,b):
     return a*x + b
 
 
+
 def findInitParamsForLine(Zre, Zim, R):
   xmin, xmax, ymin, ymax = 0, 0, 0, 0
   fmin, fmax = 0, 0
@@ -94,14 +95,17 @@ def GetFittedAB(Zre,Zim):
 
 
 F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, F0 = parser(n)
+
 xmin,xmax,ymin,ymax = 0, 0, 0, 0
 fmin,fmax = 0, 0
-a,b = findInitParamsForLine(Zre,Zim,R)
-print(a,b)
+A,B = findInitParamsForLine(Zre,Zim,R)
+print(A,B)
 
 M = []
+
 for kk in range(0, 48):
-    M.append(model(Zre[kk], R, a, b))
+    M.append(model(Zre[kk], R, A, B))
+    
 
 
 Trevarr, Tarr, Farr, Rarr, R2arr, Aarr, Barr, EpsArr = [], [], [], [], [], [], [], []
@@ -109,7 +113,9 @@ for n in range(49):
     Zre, Zim, T, M = [], [], [0]*1, []
     s1,s2 = [], []
     Fmax, R, A, B = 0, 0, 0, 0
-    F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(n)
+    F, T[0], e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(n)
+    
+    A,B = findInitParamsForLine(Zre,Zim,R)
     area = 0.005 * 0.005
     d = 0.001
     #eps0 = 8.85e-12
@@ -123,6 +129,7 @@ for n in range(49):
     R2arr.append(2*R)
     EpsArr.append(eps)
 
+F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(48)
 
 plt.ylim([0,R*35])
 plt.xlim([0,R*7])
