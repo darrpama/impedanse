@@ -1,8 +1,8 @@
 import scipy.optimize as optimization
 import matplotlib.pyplot as plt
-# import matplotlib
-# import math
-# import numpy
+import matplotlib
+import math
+import numpy
 
 with open ("data.dat","r", errors = 'replace') as f:
   lines = f.readlines()
@@ -103,6 +103,27 @@ M = []
 for kk in range(0, 48):
     M.append(model(Zre[kk], R, a, b))
 
+
+Trevarr, Tarr, Farr, Rarr, R2arr, Aarr, Barr, EpsArr = [], [], [], [], [], [], [], []
+for n in range(49):
+    Zre, Zim, T, M = [], [], [0]*1, []
+    s1,s2 = [], []
+    Fmax, R, A, B = 0, 0, 0, 0
+    F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(n)
+    area = 0.005 * 0.005
+    d = 0.001
+    #eps0 = 8.85e-12
+    eps = d / (R * 8.85e-6 * Fmax * area * 2 * math.pi)
+    Tarr.append(T[0])
+    Trevarr.append(1000/(T[0]+273))
+    Farr.append(Fmax)
+    Aarr.append(A)
+    Barr.append(B)
+    Rarr.append(R)
+    R2arr.append(2*R)
+    EpsArr.append(eps)
+
+
 plt.ylim([0,R*35])
 plt.xlim([0,R*7])
 plt.ylim([0,R*5])
@@ -118,3 +139,54 @@ plt.plot(Zre, M)
 plt.xlabel('Z\',M\u03A9')
 plt.ylabel('- Z\",M\u03A9')
 plt.show()
+
+plt.ylabel('R, M\u03A9')
+plt.xlabel('1000/T, K')
+#plt.xscale("log")
+
+plt.yscale("log")
+plt.plot(Trevarr, R2arr)
+plt.show()
+
+
+n1, n2 = 20,26
+print(Tarr[n1],Tarr[n2])
+print(Trevarr[n1],Trevarr[n2])
+print(Rarr[n1],Rarr[n2])
+print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]))
+#print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/1.38e-20), 'eV')
+print((math.log10(Rarr[n2])-math.log10(Rarr[n1]))/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/(1.38e-20/math.log10(math.exp(1)))), 'eV')
+n1, n2 = 0,8 
+print(Tarr[n1],Tarr[n2])
+#print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/1.38e-20), 'eV')
+print((math.log10(Rarr[n2])-math.log10(Rarr[n1]))/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/(1.38e-20/math.log10(math.exp(1)))), 'eV')
+
+
+plt.ylabel('a, Z\" = a\u22C5Z\' + b')
+plt.xlabel('T, \u2103')
+plt.yscale("linear")
+plt.plot(Tarr, Aarr)
+plt.show()
+
+plt.ylabel('b, Z\" = a\u22C5Z\' + b')
+plt.xlabel('T, \u2103')
+plt.yscale("linear")
+plt.plot(Tarr, Barr)
+plt.show()
+'''
+plt.ylabel('Fx')
+plt.xlabel('T, \u2103')
+plt.yscale("linear")
+plt.plot(Tarr, Farr)
+plt.show()
+'''
+plt.ylabel('\u03B5')
+plt.xlabel('T, \u2103')
+plt.yscale("linear")
+plt.axhline(76,color = 'lightgray', ls = '-')
+plt.axhline(76-11,color = 'lightgray', ls = '--')
+plt.axhline(76+11,color = 'lightgray', ls = '--')
+plt.plot(Tarr, EpsArr, 'o')
+plt.show()
+
+f.close()
