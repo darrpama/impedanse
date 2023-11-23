@@ -4,7 +4,7 @@ import matplotlib
 import math
 import numpy
 
-with open ("data.dat","r", errors = 'replace') as f:
+with open ("data2.dat","r", errors = 'replace') as f:
   lines = f.readlines()
   print(len(lines))
 
@@ -12,17 +12,18 @@ n=0
 LL,RR = 3,4
 
 def parser(n):
-    F, T, e1, e2, s1, s2, S, Z, Zre, Zim = [], [], [], [], [], [], [], [], [], []
-    for index in range(3+49*n,51+49*n):
+    F, T, e1, e2, s1, s2, S, Z, Zre, Zim, tan= [], [], [], [], [], [], [], [], [], [], []
+    for index in range(3+43*n,51+43*n):
         values = lines[index].split("\t")
         F.append(float(values[0]))
         T.append(float(values[1]))
         e1.append(float(values[2]))
         e2.append(float(values[3]))
         s1.append(float(values[4]))
-        s2.append(float(values[5]))
-        S.append(complex(float(values[4]), float(values[5])))
-        ZZ = 1e-6/complex(float(values[4]), float(values[5]))
+        tan.append(float(values[5]))
+        s2.append(abs(float(values[4])*float(values[5])))
+        S.append(complex(float(values[4]), abs(float(values[4])*float(values[5]))))
+        ZZ = 1e-6/complex(float(values[4]), abs(float(values[4])*float(values[5])))
         Z.append(ZZ)
         Zre.append(ZZ.real)
         Zim.append(ZZ.imag)
@@ -57,6 +58,7 @@ def model2 (x,a,b):
 def findInitParamsForLine(Zre, Zim, R):
   xmin, xmax, ymin, ymax = 0, 0, 0, 0
   fmin, fmax = 0, 0
+  print(len(Zre))
   for j in range (0,47):
       if Zre[j] < RR*R and Zre[j+1] >= RR*R:
           xmax, ymax = Zre[j], Zim[j]
@@ -64,6 +66,7 @@ def findInitParamsForLine(Zre, Zim, R):
       if Zre[j]< LL*R and Zre[j+1] >= LL*R:
           xmin, ymin = Zre [j], Zim[j]
           fmin = F[j]
+  print(xmax - xmin)
   A = (ymax-ymin)/(xmax-xmin)
   B = ymin - A*xmin     
   print('a = ', A, 'b = ', B, 'R = ', R)
@@ -98,14 +101,12 @@ F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, F0 = parser(n)
 
 xmin,xmax,ymin,ymax = 0, 0, 0, 0
 fmin,fmax = 0, 0
-A,B = findInitParamsForLine(Zre,Zim,R)
-print(A,B)
 
-M = []
 
-for kk in range(0, 48):
-    M.append(model(Zre[kk], R, A, B))
-    
+#A,B = findInitParamsForLine(Zre,Zim,R)
+#print(A,B)
+
+
 
 
 Trevarr, Tarr, Farr, Rarr, R2arr, Aarr, Barr, EpsArr = [], [], [], [], [], [], [], []
@@ -113,9 +114,10 @@ for n in range(49):
     Zre, Zim, T, M = [], [], [0]*1, []
     s1,s2 = [], []
     Fmax, R, A, B = 0, 0, 0, 0
-    F, T[0], e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(n)
+    F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(n)
     
-    A,B = findInitParamsForLine(Zre,Zim,R)
+    #A,B = findInitParamsForLine(Zre,Zim,R)
+    A,B = 0, 0
     area = 0.005 * 0.005
     d = 0.001
     #eps0 = 8.85e-12
@@ -130,6 +132,12 @@ for n in range(49):
     EpsArr.append(eps)
 
 F, T, e1, e2, s1, s2, S, Z, Zre, Zim, R, Fmax = parser(48)
+
+M = []
+for kk in range(0, 48):
+    M.append(model(Zre[kk], R, A, B))
+
+
 
 plt.ylim([0,R*35])
 plt.xlim([0,R*7])
@@ -156,14 +164,14 @@ plt.plot(Trevarr, R2arr)
 plt.show()
 
 
-n1, n2 = 20,26
+n1, n2 = 21,26
 print(Tarr[n1],Tarr[n2])
 print(Trevarr[n1],Trevarr[n2])
 print(Rarr[n1],Rarr[n2])
 print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]))
 #print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/1.38e-20), 'eV')
 print((math.log10(Rarr[n2])-math.log10(Rarr[n1]))/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/(1.38e-20/math.log10(math.exp(1)))), 'eV')
-n1, n2 = 0,8 
+n1, n2 = 1,8 
 print(Tarr[n1],Tarr[n2])
 #print((Rarr[n2]-Rarr[n1])/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/1.38e-20), 'eV')
 print((math.log10(Rarr[n2])-math.log10(Rarr[n1]))/(Trevarr[n2]-Trevarr[n1]) / (1.6e-19/(1.38e-20/math.log10(math.exp(1)))), 'eV')
